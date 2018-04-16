@@ -13,7 +13,7 @@ module test_rpm;
 
     initial begin
         test_clk = 0;
-        test_period = 45;
+        test_period = 47;
         i = 0;
 
         clk   = 0;

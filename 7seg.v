@@ -1,7 +1,6 @@
 
 module decode_seg(
     input clk,
-    input reset,
     input [3:0] dec,
 	output reg [7:0] seg //Active-high output to the display. Segment a => seg[0], segment b => seg[1], etc.
 );
@@ -11,17 +10,16 @@ module decode_seg(
     assign {a,b,c,d} = dec;
 
     always @(posedge clk) begin
-        /*
-	    seg[0] <=   a |  c | (b & d) | (~b & ~d);
+	    seg[0] <=   a |   c | (b & d) | (~b & ~d);
 	    seg[1] <=  ~b | (~c & ~d) | (c & d);
 	    seg[2] <=   b | ~c  | d;
 	    seg[3] <= (~b & ~d) | (c & ~d) | (b & ~c & d) | (~b & c) | a;
 	    seg[4] <= (~b & ~d) | (c & ~d);
 	    seg[5] <=   a | (~c & ~d) | (b & ~c) | (b & ~d);
-	    seg[6] <=   a | (b & ~c) | (~b & c) | (c & ~d);
+	    seg[6] <=   a | ( b & ~c) | (~b & c) | (c & ~d);
 	    seg[7] <= {a,b,c,d} >= 10;
-        */
 
+        /*
         case(dec)
             0: seg = 7'b1111110;
             1: seg = 7'b0110000;
@@ -43,13 +41,14 @@ module decode_seg(
         4'b0110 : seg = 7'h5F;
         4'b0111 : seg = 7'h70;
         4'b1000 : seg = 7'h7F;
-        4'b1001 : seg = 7'h7B; */
+        4'b1001 : seg = 7'h7B; 
         default:                
                seg = 8'b00000000;
         endcase
 
         seg = seg << 1;
 
+        */
     end
 
 
