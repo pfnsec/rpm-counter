@@ -1,6 +1,7 @@
 
-//50MHz/120Hz = 416
-`define SEG_CLK_DIV 416
+//50MHz/120Hz = 416667
+//`define SEG_CLK_DIV 416
+`define SEG_CLK_DIV 416667
 
 module seg_mux(
     input  clk,
@@ -14,7 +15,7 @@ module seg_mux(
     output reg [3:0] anode
 );
 
-    reg [8:0] clk_div;
+    reg [19:0] clk_div;
 
     initial begin
         clk_div <= 0;

@@ -17,4 +17,4 @@ def gaussian_points(mu, sig, npoints, nshifts, nbits):
     print(ypoints)
 
 
-gaussian_points(0, 1, 18, 1, 8)
+gaussian_points(0, 1, 5, 1, 5)

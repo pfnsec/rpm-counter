@@ -7,10 +7,9 @@ module adc(
     output reg adc_cs,
     input      adc_data,
 
-    input      d_ready,
-    output reg d_valid,
 
-	output reg [`ADC_WIDTH - 1:0] adc_value
+	output reg [`ADC_WIDTH - 1:0] adc_value,
+    output reg value_change
 );
 
     reg [11:0] adc_reg;
@@ -24,15 +23,19 @@ module adc(
     reg [4:0] adc_ctrl_state;
     reg [4:0] adc_bit;
 
+    //Delay between ADC reads
+    reg [3:0] adc_delay;
+    
 
     //ADC Clock Generation
     
     reg [4:0] adc_clk_div;
 
     initial begin
-        adc_clk     <= 0;
-        adc_clk_div <= 0;
-        d_valid     <= 0;
+        value_change <= 0;
+        adc_clk      <= 0;
+        adc_clk_div  <= 0;
+        adc_cs       <= 1;
     end
 
     always @(posedge clk) begin
@@ -46,7 +49,7 @@ module adc(
 
 
     initial begin
-        adc_ctrl_state <= ADC_IDLE;
+        adc_ctrl_state <= `ADC_IDLE;
     end
 
     always @(posedge adc_clk) begin
@@ -78,12 +81,9 @@ module adc(
 
             `ADC_FINISH: begin
                 adc_value      <= adc_reg;
-                d_valid        <= 1;
+                value_change   <= ~value_change;
 
-                if(d_valid & d_ready) begin
-                    d_valid        <= 0;
-                    adc_ctrl_state <= `ADC_IDLE;
-                end
+                adc_ctrl_state <= `ADC_IDLE;
             end
         endcase
     end

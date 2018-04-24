@@ -33,24 +33,26 @@ module test_rpm;
     end
 
 
-    rpm rpm_dut(clk, reset, pulse, period);
+    wire period_change;
+
+    rpm rpm_dut(clk, pulse, period, period_change);
 
     wire [3:0] dec0;
     wire [3:0] dec1;
     wire [3:0] dec2;
     wire [3:0] dec3;
 
-    bcd bcd_dut(clk, reset, period, dec0, dec1, dec2, dec3);
+    bcd bcd_dut(clk, period, period_change, dec0, dec1, dec2, dec3);
 
     wire [7:0] seg0;
     wire [7:0] seg1;
     wire [7:0] seg2;
     wire [7:0] seg3;
 
-    decode_seg decode_seg0(clk, reset, dec0, seg0);
-    decode_seg decode_seg1(clk, reset, dec1, seg1);
-    decode_seg decode_seg2(clk, reset, dec2, seg2);
-    decode_seg decode_seg3(clk, reset, dec3, seg3);
+    decode_seg decode_seg0(clk, dec0, seg0);
+    decode_seg decode_seg1(clk, dec1, seg1);
+    decode_seg decode_seg2(clk, dec2, seg2);
+    decode_seg decode_seg3(clk, dec3, seg3);
 
     always @(posedge test_clk) begin
         if(i == test_period) begin
