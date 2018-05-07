@@ -20,12 +20,13 @@ module test_threshold_rpm;
     wire [`RPM_WIDTH - 1:0] period;
     wire period_change;
     wire [`RPM_WIDTH - 1:0] rpm;
+    wire [4:0] rpm_order;
     wire rpm_change;
 
-    rpm rpm_dut(clk, pulse, period, period_change, rpm, rpm_change);
+    rpm rpm_dut(clk, pulse, period, period_change, rpm, rpm_order, rpm_change);
 
 
-    reg [5:0] sq_p;
+    reg [12:0] sq_p;
 
     initial begin
         adc_value <= 0;
@@ -35,7 +36,8 @@ module test_threshold_rpm;
     end
 
     always @(posedge clk) begin
-        if(sq_p == 0) begin
+        if(sq_p == 2048) begin
+            sq_p <= 0;
             adc_value <= adc_value + 4095;
             adc_value_change <= ~adc_value_change;
         end
@@ -47,5 +49,22 @@ module test_threshold_rpm;
 //        $display(period);
 //        $display(rpm);
     end
+
+    wire [3:0] dec0;
+    wire [3:0] dec1;
+    wire [3:0] dec2;
+    wire [3:0] dec3;
+
+    bcd bcd_dut(clk, rpm, rpm_change, dec0, dec1, dec2, dec3);
+
+    wire [7:0] seg0;
+    wire [7:0] seg1;
+    wire [7:0] seg2;
+    wire [7:0] seg3;
+
+    decode_seg decode_seg0(clk, dec0, seg0);
+    decode_seg decode_seg1(clk, dec1, seg1);
+    decode_seg decode_seg2(clk, dec2, seg2);
+    decode_seg decode_seg3(clk, dec3, seg3);
 
 endmodule

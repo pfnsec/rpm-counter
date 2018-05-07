@@ -24,7 +24,7 @@ module adc(
     reg [4:0] adc_bit;
 
     //Delay between ADC reads
-    reg [3:0] adc_delay;
+    reg [6:0] adc_delay;
     
 
     //ADC Clock Generation
@@ -57,7 +57,12 @@ module adc(
             `ADC_IDLE: begin
                 adc_bit <= 15;
                 adc_cs  <= 1;
-                adc_ctrl_state <= `ADC_START;
+                if(adc_delay == 0) begin
+                    adc_ctrl_state <= `ADC_START;
+                end else begin
+                    adc_delay <= adc_delay - 1;
+                end
+
             end
 
             `ADC_START: begin
@@ -83,6 +88,7 @@ module adc(
                 adc_value      <= adc_reg;
                 value_change   <= ~value_change;
 
+                adc_delay <= 16;
                 adc_ctrl_state <= `ADC_IDLE;
             end
         endcase

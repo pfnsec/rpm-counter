@@ -3,18 +3,25 @@
 module bcd(
     input clk,
 
-    input [`RPM_WIDTH - 1:0] period,
-    input period_change,
+    input [`RPM_WIDTH - 1:0] rpm,
+    input [4:0] rpm_order,
+    input rpm_change,
 
     output reg [3:0] dec0,
     output reg [3:0] dec1,
     output reg [3:0] dec2,
-    output reg [3:0] dec3
+    output reg [3:0] dec3,
+
+    output reg [3:0] dp,
+
+    output reg [7:0] led
 );
+    integer i;
 
     reg change;
-    reg period_changed;
-    reg [6:0] shift_count;
+    reg rpm_changed;
+    reg [4:0] order;
+    reg [`RPM_WIDTH_2:0] shift_count;
     reg [15:0] dec;
     reg [`RPM_WIDTH - 1:0] p;
 
@@ -24,7 +31,7 @@ module bcd(
 
     initial begin
         shift_count <= 0;
-        period_changed <= 0;
+        rpm_changed <= 0;
         state <= `BCD_IDLE;
 
         dec  <= 0;
@@ -35,25 +42,15 @@ module bcd(
         dec3 <= 0;
     end
 
-    always @(posedge clk) begin
-        //dec0 <=  period % 10;
-        //dec1 <= (period % 100) / 10;
-        //dec2 <= (period % 1000) / 100;
-        //dec3 <= (period % 10000) / 1000;
-    end
-
-
-
 
     always @(posedge clk) begin    
         case(state) 
             `BCD_IDLE: begin
-                if(period_change != period_changed) begin
-                    $display("!");
-                    period_changed <= period_change;
-                    p = period;
+                if(rpm_change != rpm_changed) begin
                     state <= `BCD_RUN;
-                    dec    = 0;
+                    p   = rpm;
+                    order <= rpm_order;
+                    dec = 0;
                     shift_count = 0;
                 end
             end
@@ -61,7 +58,6 @@ module bcd(
             `BCD_RUN: begin
                 if(shift_count < `RPM_WIDTH) begin
                     $display("?");
-                    {dec, p} = {dec, p} << 1;
                     shift_count = shift_count + 1;
 
                     if(dec[3:0] >= 5)
@@ -76,12 +72,22 @@ module bcd(
                     if(dec[15:12] >= 5)
                         dec[15:12] = dec[15:12] + 3;
 
-                    $display("%b", {dec,p});
+                    {dec, p} = {dec, p} << 1;
+
                 end else begin
-                    dec0  <= dec[3:0];
-                    dec1  <= dec[7:4];
-                    dec2  <= dec[11:8];
-                    dec3  <= dec[15:12];
+                    dec0  = dec[3:0];
+                    dec1  = dec[7:4];
+                    dec2  = dec[11:8];
+                    dec3  = dec[15:12];
+
+
+                    //for(i = 0; i < 32; i = i + 1) begin
+                        //if(order > 3)
+
+
+                    //end
+
+                    $display("%d %d %d %d", dec0, dec1, dec2, dec3);
                     state <= `BCD_IDLE;
                 end
             end

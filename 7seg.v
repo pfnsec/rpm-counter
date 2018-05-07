@@ -2,7 +2,9 @@
 module decode_seg(
     input clk,
     input [3:0] dec,
-	output reg [7:0] seg //Active-high output to the display. Segment a => seg[0], segment b => seg[1], etc.
+    input dp_i,
+    output reg dp,
+	output reg [6:0] seg //Active-high output to the display. Segment a => seg[0], segment b => seg[1], etc.
 );
 
     wire a, b, c, d;
@@ -17,7 +19,10 @@ module decode_seg(
 	    seg[4] <= (~b & ~d) | (c & ~d);
 	    seg[5] <=   a | (~c & ~d) | (b & ~c) | (b & ~d);
 	    seg[6] <=   a | ( b & ~c) | (~b & c) | (c & ~d);
-	    seg[7] <= {a,b,c,d} >= 10;
+
+        dp <= dp_i;
+
+	    //seg[7] <= {a,b,c,d} >= 10;
 
         /*
         case(dec)
